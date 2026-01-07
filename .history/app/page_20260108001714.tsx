@@ -76,8 +76,8 @@ export default function Home() {
             Resource <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Validator</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Audit status IP Member, RPKI Validation, dan Reverse DNS check dalam satu klik. 
-            <span className="block mt-1 font-medium text-blue-600">Kalo ada yang gampang, ngapain harus ribet?</span>
+            Audit status IP Member, RPKI Validation, dan Reverse DNS check dalam satu kedipan mata. 
+            <span className="block mt-1 font-medium text-blue-600">Sat-set, Anti Ribet.</span>
           </p>
         </div>
 

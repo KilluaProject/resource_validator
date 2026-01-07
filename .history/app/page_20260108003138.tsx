@@ -77,7 +77,7 @@ export default function Home() {
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Audit status IP Member, RPKI Validation, dan Reverse DNS check dalam satu klik. 
-            <span className="block mt-1 font-medium text-blue-600">Kalo ada yang gampang, ngapain harus ribet?</span>
+            <span className="block mt-1 font-medium text-blue-600">Bikin Hidup happy</span>
           </p>
         </div>
 
