@@ -76,7 +76,13 @@ export default function Navbar() {
       {/* Muncul cuma kalau isOpen = true */}
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-lg px-6 py-6 flex flex-col gap-4 animate-in slide-in-from-top-5 duration-200">
-          
+          <Link 
+            href="/" 
+            className="text-base font-semibold text-slate-700 hover:text-blue-600 py-2 border-b border-slate-50"
+            onClick={() => setIsOpen(false)} // Tutup menu pas diklik
+          >
+            🚀 Scanner
+          </Link>
           <Link 
             href="/docs" 
             className="text-base font-semibold text-slate-700 hover:text-blue-600 py-2 border-b border-slate-50"
