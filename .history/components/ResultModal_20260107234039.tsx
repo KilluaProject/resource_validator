@@ -150,7 +150,7 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
                     {/* Reverse DNS */}
                     <div className="flex flex-col border-b border-gray-100 pb-2 gap-1">
                       <span className="text-sm text-gray-600">Reverse DNS / Nameservers</span>
-                      <span className="text-sm font-mono text-gray-800 text-right wrap=break-words bg-gray-50 p-2 rounded border border-gray-100">
+                      <span className="text-sm font-mono text-gray-800 text-right break-words bg-gray-50 p-2 rounded border border-gray-100">
                         {item.ptr_record}
                       </span>
                     </div>
