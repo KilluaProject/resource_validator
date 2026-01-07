@@ -100,6 +100,7 @@ export default function Home() {
           <button
             onClick={handleScan}
             disabled={loading}
+            // HAPUS 'w-full', ganti jadi padding aja 'px-6' biar ukurannya pas
             className={`py-3 px-8 rounded-xl font-bold text-white transition-all shadow-lg flex items-center justify-center gap-2 min-w-40
               ${loading 
                 ? "bg-gray-400 cursor-not-allowed opacity-80" 
