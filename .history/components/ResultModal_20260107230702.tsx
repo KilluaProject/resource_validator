@@ -72,7 +72,7 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
                 {/* KIRI: WHOIS Info */}
                 <div className="space-y-4">
                   <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider border-b pb-1">
-                    🏢 Whois Data
+                    🏢 Whois Hierarchy
                   </h4>
                   
                   {/* Parent Info */}

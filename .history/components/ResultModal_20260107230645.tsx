@@ -72,12 +72,12 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
                 {/* KIRI: WHOIS Info */}
                 <div className="space-y-4">
                   <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider border-b pb-1">
-                    🏢 Whois Data
+                    🏢 Whois Hierarchy
                   </h4>
                   
                   {/* Parent Info */}
                   <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                    <p className="text-xs text-gray-500 mb-1">Full Block (Direct Alloc)</p>
+                    <p className="text-xs text-gray-500 mb-1">Parent (Direct Alloc)</p>
                     <p className="font-semibold text-gray-800 text-sm">{item.parent_name}</p>
                     <p className="text-xs text-gray-500 font-mono mt-1">{item.parent_net}</p>
                     <p className="text-xs text-gray-600 italic mt-1 border-t border-gray-200 pt-1">
