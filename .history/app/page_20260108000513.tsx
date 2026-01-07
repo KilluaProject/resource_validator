@@ -170,7 +170,7 @@ export default function Home() {
 
         {/* Footer Text */}
         <p className="text-center text-slate-400 text-sm">
-          &copy; {new Date().getFullYear()} Cuma Iseng doang ini mah
+          &copy; {new Date().getFullYear()} Hostmaster Tools. Built with Next.js & Python.
         </p>
 
       </div>
