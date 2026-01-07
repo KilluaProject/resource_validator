@@ -50,16 +50,10 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
                 </div>
 
                 <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
-                  // Prioritas 1: Khusus INVALID (AS0) -> Merah Soft
-                  item.rpki_status.includes("INVALID (AS0)")
-                    ? "bg-red-100 text-red-700 border-red-100" 
-                    // Prioritas 2: VALID -> Hijau
-                    : item.rpki_status.includes("VALID") 
+                  item.rpki_status.includes("VALID") 
                     ? "bg-green-100 text-green-700 border-green-200" 
-                    // Prioritas 3: INVALID Lainnya -> Merah Standar
                     : item.rpki_status.includes("INVALID")
                     ? "bg-red-100 text-red-700 border-red-200"
-                    // Default: Abu-abu (Unknown/Not Found)
                     : "bg-gray-100 text-gray-600 border-gray-200"
                 }`}>
                   RPKI: {item.rpki_status}
