@@ -101,7 +101,7 @@ export default function Home() {
             onClick={handleScan}
             disabled={loading}
             // HAPUS 'w-full', ganti jadi padding aja 'px-6' biar ukurannya pas
-            className={`py-3 px-8 rounded-xl font-bold text-white transition-all shadow-lg flex items-center justify-center gap-2 min-w-40
+            className={`py-3 px-8 rounded-xl font-bold text-white transition-all shadow-lg flex items-center justify-center gap-2 min-w-[160px]
               ${loading 
                 ? "bg-gray-400 cursor-not-allowed opacity-80" 
                 : "bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/30 hover:-translate-y-0.5"
