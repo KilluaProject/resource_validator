@@ -132,8 +132,8 @@ export default function Home() {
         <ResultModal 
           data={modalData} 
           onClose={() => {
-            setModalData(null);  
-            setInputText("");
+            setModalData(null);  // 1. Tutup Modal
+            setInputText("");    // 2. KOSONGKAN KOLOM IP (Auto Bersih ✨)
           }} 
         />
       )}
