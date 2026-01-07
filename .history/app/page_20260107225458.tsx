@@ -97,36 +97,36 @@ export default function Home() {
             />
           </div>
 
-          <button
-              onClick={handleScan}
-              disabled={loading} // Matiin tombol pas lagi loading
-              className={`w-full py-3 px-6 rounded-xl font-bold text-white transition-all shadow-lg flex items-center justify-center gap-2
-                ${loading 
-                  ? "bg-gray-400 cursor-not-allowed opacity-80" // Style pas Loading
-                  : "bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/30 hover:-translate-y-0.5" // Style Normal
-                }`}
-            >
-              {loading ? (
-                <>
-                  {/* 1. ICON SPINNER (Muter-muter) */}
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  
-                  {/* 2. TEKS ANIMASI (Pulse) */}
-                  <span className="animate-pulse">Scanning...</span>
-                </>
-              ) : (
-                <>
-                  {/* ICON SCAN (Opsional, icon kaca pembesar atau petir) */}
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  <span>Mulai Audit</span>
-                </>
-                )}
-            </button>
+        <button
+  onClick={handleScan}
+  disabled={loading} // Matiin tombol pas lagi loading
+  className={`w-full py-3 px-6 rounded-xl font-bold text-white transition-all shadow-lg flex items-center justify-center gap-2
+    ${loading 
+      ? "bg-gray-400 cursor-not-allowed opacity-80" // Style pas Loading
+      : "bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/30 hover:-translate-y-0.5" // Style Normal
+    }`}
+>
+  {loading ? (
+    <>
+      {/* 1. ICON SPINNER (Muter-muter) */}
+      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      
+      {/* 2. TEKS ANIMASI (Pulse) */}
+      <span className="animate-pulse">Scanning...</span>
+    </>
+  ) : (
+    <>
+      {/* ICON SCAN (Opsional, icon kaca pembesar atau petir) */}
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <span>Mulai Audit</span>
+    </>
+  )}
+</button>
         </div>
       </div>
 
