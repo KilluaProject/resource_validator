@@ -17,7 +17,9 @@ export default function Navbar() {
 
         {/* Menu Links */}
         <div className="flex gap-6">
-          
+          <Link href="/" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">
+            Scanner
+          </Link>
           <Link href="/docs" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">
             Dokumentasi
           </Link>
