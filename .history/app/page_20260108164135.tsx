@@ -14,38 +14,55 @@ interface ASNResult {
 }
 
 export default function Home() {
+  // Mode: 'IP' atau 'ASN'
   const [mode, setMode] = useState<"IP" | "ASN">("IP");
+  
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<ScanResult[]>([]);
+  
+  // State khusus ASN
   const [asnResult, setAsnResult] = useState<ASNResult | null>(null);
+  
   const [showModal, setShowModal] = useState(false);
+  
+  // Ref buat input file
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // --- HELPER: AUTO DOWNLOAD REPORT ---
+  const triggerDownload = (data: ScanResult[]) => {
+    const fileName = `Audit_Report_${new Date().toISOString().split('T')[0]}.json`;
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const href = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    alert(`⚡ Scan selesai! Karena ada ${data.length} IP, laporan otomatis di-download.`);
+  };
 
   // --- FITUR UPLOAD TXT ---
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
-      setInput(content);
+      setInput(content); // Masukin isi file ke textarea
     };
     reader.readAsText(file);
+    
+    // Reset value biar bisa upload file yg sama lagi kalo mau
     e.target.value = "";
   };
 
   // --- LOGIC SCAN IP ---
   const handleScanIP = async (targets: string) => {
     if (!targets.trim()) return;
-
-    // 1. VALIDASI JUMLAH BARIS (MAX 50)
-    const lineCount = targets.split('\n').filter(line => line.trim() !== '').length;
-    if (lineCount > 50 && mode === "IP") {
-        alert(`⚠️ Too many IPs! Maksimal 50 IP sekali scan biar browser gak ngebul.\nInput lu: ${lineCount} baris.`);
-        return;
-    }
-
     setLoading(true);
     if(mode === "IP") setAsnResult(null); 
     
@@ -57,13 +74,22 @@ export default function Home() {
       });
       const data = await res.json();
       
-      // LOGIC SIMPLE: Selalu munculin Modal, biarin user yg mutusin mau download apa enggak
-      if (mode === "ASN") {
+      // LOGIC BARU: Cek jumlah data
+      const totalData = mode === "ASN" ? [...results, ...data] : data;
+
+      if (totalData.length > 10 && mode === "IP") {
+        // Kalo input manual dan > 10, Auto Download
+        triggerDownload(totalData);
+        setResults([]); // Kosongin biar gak berat
+      } else if (mode === "ASN") {
+         // Kalo mode ASN, kita append (tambah) ke hasil yg udah ada
          setResults(prev => [...prev, ...data]);
+         setShowModal(true); // Kalo audit satu-satu dari ASN, tetep munculin modal
       } else {
+         // Kalo dikit (<10), munculin Modal cantik
          setResults(data);
+         setShowModal(true);
       }
-      setShowModal(true);
       
     } catch (error) {
       console.error("Error:", error);
@@ -112,6 +138,7 @@ export default function Home() {
 
       <div className="relative z-10 max-w-4xl mx-auto pt-28 px-6 text-center">
         
+        {/* Title */}
         <div className="mb-8 space-y-3">
           <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
             Resource <span className="text-blue-600">Validator.</span>
@@ -121,7 +148,7 @@ export default function Home() {
           </p>
         </div>
 
-        {/* SWITCH TOGGLE */}
+        {/* === SWITCH TOGGLE IP/ASN === */}
         <div className="flex justify-center mb-6">
           <div className="bg-white p-1 rounded-xl border border-slate-200 shadow-sm inline-flex">
             <button 
@@ -143,38 +170,57 @@ export default function Home() {
           </div>
         </div>
 
-        {/* INPUT CARD */}
+        {/* === INPUT CARD UTAMA (RE-DESIGNED) === */}
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden text-left transition-all focus-within:ring-4 focus-within:ring-blue-100/50">
+          
+          {/* Header Input: Toolbar */}
           <div className="bg-slate-50 border-b border-slate-100 px-4 py-2 flex justify-between items-center">
              <div className="flex items-center gap-2">
                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   {mode === "IP" ? "Bulk Input Mode" : "Single Input Mode"}
                </span>
+               
+               {/* NOTICE: > 10 IPs */}
                {mode === "IP" && (
-                 <span className="bg-slate-200 text-slate-600 text-[10px] px-2 py-0.5 rounded border border-slate-300 font-medium">
-                   Max 50 Lines
+                 <span className="bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded border border-yellow-200 font-medium">
+                   ⚡ &gt;10 IPs = Auto Download
                  </span>
                )}
              </div>
 
+             {/* Tombol Upload & Clear */}
              <div className="flex gap-2">
                {mode === "IP" && (
                  <>
-                   <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".txt" className="hidden" />
-                   <button onClick={() => fileInputRef.current?.click()} className="text-xs flex items-center gap-1 text-slate-500 hover:text-blue-600 font-medium transition-colors px-2 py-1 hover:bg-white rounded">
+                   <input 
+                     type="file" 
+                     ref={fileInputRef} 
+                     onChange={handleFileUpload} 
+                     accept=".txt" 
+                     className="hidden" 
+                   />
+                   <button 
+                     onClick={() => fileInputRef.current?.click()}
+                     className="text-xs flex items-center gap-1 text-slate-500 hover:text-blue-600 font-medium transition-colors px-2 py-1 hover:bg-white rounded"
+                   >
                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                      Upload .txt
                    </button>
                  </>
                )}
+               
                {input && (
-                 <button onClick={() => setInput("")} className="text-xs text-red-400 hover:text-red-600 font-medium px-2 py-1 hover:bg-white rounded transition-colors">
+                 <button 
+                   onClick={() => setInput("")}
+                   className="text-xs text-red-400 hover:text-red-600 font-medium px-2 py-1 hover:bg-white rounded transition-colors"
+                 >
                    Clear
                  </button>
                )}
              </div>
           </div>
 
+          {/* Area Input Gede (Textarea) */}
           <div className="p-2">
              {mode === "IP" ? (
                 <textarea 
@@ -195,6 +241,7 @@ export default function Home() {
              )}
           </div>
 
+          {/* Footer Input: Tombol Action */}
           <div className="p-4 bg-slate-50/50 border-t border-slate-100 flex justify-end">
              <button 
                 onClick={handleSubmit}
@@ -216,7 +263,14 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ASN RESULT GRID */}
+        {/* Helper Text */}
+        <p className="mt-4 text-xs text-slate-400 font-medium">
+          {mode === "IP" 
+            ? "Supports manual input or file upload. One CIDR per line." 
+            : "Retrieve announced prefixes to audit specific ASN members."}
+        </p>
+
+        {/* === HASIL SCAN ASN (GRID) === */}
         {mode === "ASN" && asnResult && (
           <div className="mt-12 text-left animate-in slide-in-from-bottom-5 fade-in duration-500 pb-20">
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -238,6 +292,7 @@ export default function Home() {
                       </div>
                       <span className="font-mono text-slate-700 font-medium">{prefix}</span>
                    </div>
+                   
                    <button 
                      onClick={() => handleScanIP(prefix)}
                      className="px-4 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-blue-600 hover:scale-105 active:scale-95 flex items-center gap-2"
@@ -247,10 +302,18 @@ export default function Home() {
                 </div>
               ))}
             </div>
+
+            {asnResult.prefixes.length === 0 && (
+                <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-300 text-slate-400">
+                    No prefixes found.
+                </div>
+            )}
           </div>
         )}
+
       </div>
 
+      {/* Result Modal */}
       {showModal && results.length > 0 && (
         <ResultModal data={results} onClose={() => setShowModal(false)} />
       )}
