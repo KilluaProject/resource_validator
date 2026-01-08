@@ -98,12 +98,15 @@ export default function AboutPage() {
 
            <div className="relative z-10 flex flex-col items-center">
               <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-lg mb-6 border-4 border-slate-800">
-                RA 
+                 ME {/* Ganti Inisial Lu disini, misal "ME" */}
               </div>
               
               <h3 className="text-2xl font-bold text-white mb-2">
-                Developed with ❤️ & ☕️ [NAMA LENGKAP LU]
+                Developed by [NAMA LENGKAP LU]
               </h3>
+              <p className="text-blue-200 font-medium mb-6">
+                Hostmaster IDNIC APJII
+              </p>
 
               <blockquote className="max-w-xl mx-auto text-slate-400 text-sm italic leading-relaxed mb-8">
                 &quot;Tidak perlu menjadi programmer handal untuk membuat perubahan. Cukup peduli dengan masalah yang ada, dan punya kemauan untuk mencari solusinya.&quot;
@@ -117,7 +120,7 @@ export default function AboutPage() {
 
         <div className="mt-12 text-center pb-10">
            <p className="text-xs text-slate-400">
-             &copy; 2026 Resource Validator. Internal Tools US
+             &copy; 2025 Resource Validator. Internal Tools for IDNIC APJII.
            </p>
         </div>
 
