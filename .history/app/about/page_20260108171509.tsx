@@ -117,7 +117,7 @@ export default function AboutPage() {
 
         <div className="mt-12 text-center pb-10">
            <p className="text-xs text-slate-400">
-             &copy; 2026 Resource Validator
+             &copy; 2026 Resource Validator. Internal Tools US
            </p>
         </div>
 
