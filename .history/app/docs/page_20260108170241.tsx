@@ -4,14 +4,14 @@ export default function DocsPage() {
   return (
     <main className="min-h-screen bg-slate-50 relative overflow-hidden pb-20">
       
-      {/* Background Grid Pattern */}
+      {/* Background Grid Pattern (Sama kayak Home) */}
       <div className="absolute inset-0 z-0 opacity-[0.4] pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto pt-28 px-6">
         
-        {/* === HERO SECTION === */}
+        {/* === HERO SECTION (Mirip Home) === */}
         <div className="text-center mb-16 space-y-4">
           <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
             Validator <span className="text-blue-600">Docs.</span>
@@ -24,7 +24,7 @@ export default function DocsPage() {
 
         <div className="space-y-8">
           
-          {/* CARD 1: WHAT'S NEW */}
+          {/* CARD 1: WHAT'S NEW (Highlight) */}
           <section className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden">
             <div className="bg-blue-50/50 px-8 py-4 border-b border-blue-100 flex items-center gap-3">
               <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
@@ -85,7 +85,7 @@ export default function DocsPage() {
           </section>
 
 
-          {/* CARD 2: PANDUAN */}
+          {/* CARD 2: PANDUAN (Clean Style) */}
           <section className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
             <h2 className="text-2xl font-extrabold text-slate-900 mb-8 border-b border-slate-100 pb-4">
               Panduan Penggunaan
@@ -114,8 +114,7 @@ export default function DocsPage() {
                 <div>
                   <h3 className="text-lg font-bold text-slate-800 mb-2">Mode Scan ASN</h3>
                   <p className="text-slate-600 text-sm mb-3 leading-relaxed">
-                    {/* FIXED: Ganti "kesehatan" jadi &quot;kesehatan&quot; */}
-                    Gunakan mode ini untuk melihat &quot;kesehatan&quot; resource member secara keseluruhan. Tools akan menarik data dari RIPEstat.
+                    Gunakan mode ini untuk melihat resource member secara keseluruhan. Tools akan menarik data dari RIPEstat.
                   </p>
                   <ul className="list-disc pl-5 text-sm text-slate-600 space-y-1">
                     <li>Input nomor ASN (contoh: <code>136115</code>).</li>
@@ -126,13 +125,12 @@ export default function DocsPage() {
             </div>
           </section>
 
-          {/* CARD 3: TECHNICAL LOGIC */}
+          {/* CARD 3: TECHNICAL LOGIC (Dark Mode) */}
           <section className="bg-slate-900 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
+             {/* Hiasan */}
              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
-            {/* FIXED: Ganti "Behind the Scene" jadi &quot;Behind the Scene&quot; */}
-            <h2 className="text-xl font-bold mb-6 relative z-10">Logic &quot;Behind the Scene&quot;</h2>
-            
+            <h2 className="text-xl font-bold mb-6 relative z-10">Logic "Behind the Scene"</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
               
               <div className="bg-white/5 p-5 rounded-xl border border-white/10 backdrop-blur-sm">
