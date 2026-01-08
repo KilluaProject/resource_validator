@@ -33,9 +33,9 @@ def query_socket(query_str):
         s.send(cmd.encode())
         response = b""
         while True:
-            data_recv = s.recv(4096)
-            if not data_recv: break
-            response += data_recv
+            data = s.recv(4096)
+            if not data: break
+            response += data
         s.close()
         return response.decode('utf-8', errors='ignore')
     except Exception as e:
@@ -143,6 +143,8 @@ def calculate_size(range_str):
 # 4. CONTROLLER LOGIC (HOSTMASTER OP VERSION)
 # ==========================================
 def scan_ip_logic(cidr_str):
+    # print(f"\n🔍 Processing: {cidr_str}")
+    
     # --- PHASE 1: IP WHOIS ---
     raw_text = get_full_data(cidr_str)
     hierarchy_list, route_list = parse_and_separate(raw_text)
@@ -175,14 +177,11 @@ def scan_ip_logic(cidr_str):
         url = f"https://stat.ripe.net/data/routing-status/data.json?resource={cidr_str}"
         resp = requests.get(url, timeout=5)
         if resp.status_code == 200:
-            # GANTI NAMA VARIABLE BIAR GAK CRASH
-            ripe_data = resp.json().get('data', {}) 
-            
-            v4_vis = ripe_data.get('visibility', {}).get('v4', {}).get('ris_peers_seeing', 0)
-            v6_vis = ripe_data.get('visibility', {}).get('v6', {}).get('ris_peers_seeing', 0)
+            data = resp.json().get('data', {})
+            v4_vis = data.get('visibility', {}).get('v4', {}).get('ris_peers_seeing', 0)
+            v6_vis = data.get('visibility', {}).get('v6', {}).get('ris_peers_seeing', 0)
             if v4_vis > 0 or v6_vis > 0: visibility = "Announced (Global)"
-            
-            for item in ripe_data.get('route_objects', []):
+            for item in data.get('route_objects', []):
                 item_fmt = f"{item.get('origin')}@{item.get('source')}"
                 if item_fmt not in final_irr_list: final_irr_list.append(item_fmt)
         
@@ -264,8 +263,8 @@ def convert_range_to_cidr(teks_input):
 
 @app.post("/api/scan")
 @app.post("/scan")
-async def scan_endpoint(payload: InputData): # GANTI NAMA VARIABLE
-    raw_lines = payload.raw_text.split('\n')
+async def scan_endpoint(data: InputData):
+    raw_lines = data.raw_text.split('\n')
     results = []
     for line in raw_lines:
         line = line.strip()
@@ -281,14 +280,14 @@ async def scan_endpoint(payload: InputData): # GANTI NAMA VARIABLE
             time.sleep(1)
     return results
 
-# -- ASN SCANNER INPUT --
+# -- NEW: ASN SCANNER INPUT --
 class ASNInput(BaseModel):
     asn: str
 
 @app.post("/api/asn")
 @app.post("/asn")
-async def asn_endpoint(payload: ASNInput): # GANTI NAMA VARIABLE JADI payload
-    asn_clean = payload.asn.upper().replace("AS", "").strip()
+async def asn_endpoint(data: ASNInput):
+    asn_clean = data.asn.upper().replace("AS", "").strip()
     
     # 1. Cek Holder Name
     holder_name = f"AS{asn_clean}"
@@ -305,16 +304,14 @@ async def asn_endpoint(payload: ASNInput): # GANTI NAMA VARIABLE JADI payload
         url_prefix = f"https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS{asn_clean}"
         resp = requests.get(url_prefix, timeout=10)
         if resp.status_code == 200:
-            # GANTI NAMA VARIABLE BIAR GAK BENTROK
-            prefix_data = resp.json().get('data', {}).get('prefixes', [])
+            data = resp.json().get('data', {}).get('prefixes', [])
             seen = set()
-            for item in prefix_data:
+            for item in data:
                 p = item.get('prefix')
                 if p not in seen:
                     prefixes.append(p)
                     seen.add(p)
-    except Exception as e:
-        print(f"Error ASN: {e}")
+    except: pass
 
     return {
         "asn": f"AS{asn_clean}",
