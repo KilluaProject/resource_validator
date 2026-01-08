@@ -123,7 +123,7 @@ export default function DocsPage() {
 
         <div className="mt-16 text-center border-t border-slate-200 pt-8">
             <p className="text-sm text-slate-500">
-                Develope with ❤️ and ☕️.
+                Dikembangkan untuk efisiensi operasional Hostmaster IDNIC APJII.
             </p>
             <div className="mt-4">
                 <Link href="/" className="text-blue-600 font-bold hover:underline">
