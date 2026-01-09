@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Navbar from "@/components/Navber";
+import Navbar from "@/components/Navbar";
 import ResultModal from "@/components/ResultModal";
 import { ScanResult } from "@/types";
 
@@ -109,7 +109,7 @@ export default function Home() {
           
           {/* Sub-text Teknis (Biar tetep jelas ini tools apa) */}
           <p className="text-slate-500 text-sm md:text-base">
-            Otomatisasi Whois Checking, RPKI, IRR, & Reverse DNS.
+            Otomatisasi Audit RPKI, IRR, & Reverse DNS untuk Hostmaster IDNIC APJII.
           </p>
         </div>
 
@@ -201,7 +201,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    {mode === "IP" ? "🚀 Start" : "Search ASN"}
+                    {mode === "IP" ? "Start Audit" : "Search ASN"}
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                   </>
                 )}
