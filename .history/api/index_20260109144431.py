@@ -29,7 +29,7 @@ WHOIS_RADB = "whois.radb.net"
 def query_socket(query_str, server=WHOIS_APNIC):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(5) 
+        s.settimeout(5) # Timeout 5 detik biar sat-set
         s.connect((server, 43))
         cmd = f"{query_str}\r\n"
         s.send(cmd.encode())
@@ -57,7 +57,7 @@ def calculate_size(range_str):
 # 2. WORKER TASKS (PARALLEL WORKERS)
 # ==========================================
 
-# --- TASK A: APNIC HIERARCHY (FIXED: IGNORE APNIC ROOT) ---
+# --- TASK A: APNIC HIERARCHY (FIXED PARENT LOGIC) ---
 def task_apnic_hierarchy(cidr):
     def parse_apnic(raw_text):
         hierarchy_objs = []
@@ -82,51 +82,37 @@ def task_apnic_hierarchy(cidr):
              hierarchy_objs.append(current_obj)
         return hierarchy_objs
 
-    # 1. Ambil Self
+    # 1. Ambil Object itu sendiri
     cmd_self = f"-rB {cidr}" 
     raw_self = query_socket(cmd_self, server=WHOIS_APNIC)
     
-    # 2. Ambil Parent (-l)
+    # 2. Ambil PARENTNYA (Flag -l = One level less specific) -> INI FIX BUG PARENT
     cmd_parent = f"-l -rB {cidr}" 
     raw_parent = query_socket(cmd_parent, server=WHOIS_APNIC)
 
-    # 3. Ambil Children (-m)
-    cmd_children = f"-m -rB {cidr}" 
+    # 3. Ambil ANAKNYA (Flag -m = One level more specific)
+    cmd_children = f"-m -rB {cidr}"
     raw_children = query_socket(cmd_children, server=WHOIS_APNIC)
     
+    # Gabung semua
     full_raw = raw_self + "\n" + raw_parent + "\n" + raw_children
+    
     hierarchy_list = parse_apnic(full_raw)
     
     unique_hierarchy = []
     seen = set()
-    
     for obj in hierarchy_list:
         rng = obj.get('_range')
-        name = obj.get('netname', '').upper()
-        
-        # === FILTER LOGIC BARU ===
-        # 1. Skip Duplicate
-        if rng in seen: continue
-        
-        # 2. Skip "Leluhur" APNIC-AP (/8) biar gak jadi Parent
-        if name == 'APNIC-AP' or '103.0.0.0 - 103.255.255.255' in rng:
-            continue
-            
-        seen.add(rng)
-        obj['_size'] = calculate_size(rng)
-        unique_hierarchy.append(obj)
+        if rng not in seen:
+            seen.add(rng)
+            obj['_size'] = calculate_size(rng)
+            unique_hierarchy.append(obj)
     
     # Sort dari GEDE (Parent) ke KECIL (Child)
     unique_hierarchy.sort(key=lambda x: x['_size'], reverse=True)
     
-    # Ambil yang paling gede (setelah difilter) sebagai Parent
     parent_obj = unique_hierarchy[0] if unique_hierarchy else None
     
-    # Fallback: Kalau kosong (IP APNIC direct), ambil dari raw self
-    if not parent_obj:
-        temp = parse_apnic(raw_self)
-        parent_obj = temp[0] if temp else None
-
     # Format Parent
     p_net = parent_obj.get('_range', '-') if parent_obj else '-'
     p_name = parent_obj.get('netname', 'Not Found') if parent_obj else 'Not Found'
@@ -287,6 +273,7 @@ def task_reverse_dns(cidr):
 # 3. CONTROLLER (THREAD POOL)
 # ==========================================
 def scan_ip_logic_parallel(cidr_str):
+    # Jalanin 3 Task Worker barengan
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         future_apnic = executor.submit(task_apnic_hierarchy, cidr_str)
         future_routing = executor.submit(task_routing_intelligence, cidr_str)
@@ -335,10 +322,10 @@ async def scan_endpoint(payload: InputData):
     results = []
     for cidr in valid_cidrs:
         try:
-            # 1. Parallel Scan (Internal)
+            # 1. Analisa Parallel per IP
             data = scan_ip_logic_parallel(str(cidr))
             results.append(data)
-            # 2. Safety Sleep (External)
+            # 2. Safety Sleep 0.5s antar IP biar aman dari Ban
             time.sleep(0.5)
         except Exception as e:
             print(f"Error processing {cidr}: {e}")
