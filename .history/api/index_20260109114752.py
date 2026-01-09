@@ -25,11 +25,11 @@ app.add_middleware(
 WHOIS_APNIC = "whois.apnic.net"
 WHOIS_RADB = "whois.radb.net"
 
-# Support multiple WHOIS servers
+# Update: Tambah parameter 'server' biar bisa switch ke RADB
 def query_socket(query_str, server=WHOIS_APNIC):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(10) # 10 detik timeout
+        s.settimeout(10) # Timeout dipendekin dikit biar cepet
         s.connect((server, 43))
         cmd = f"{query_str}\r\n"
         s.send(cmd.encode())
@@ -45,28 +45,36 @@ def query_socket(query_str, server=WHOIS_APNIC):
         return ""
 
 # ==========================================
-# 2. MODUL RADB (DIRECT CHECK)
+# 2. MODUL RADB (NEW FEATURE)
 # ==========================================
 def get_radb_irr_objects(cidr):
-    # Query langsung ke RADB
+    # Query langsung ke RADB (Flags: -T route,route6 -M)
+    # Tapi biasanya query prefix langsung udah cukup di RADB
     raw_text = query_socket(f"{cidr}", server=WHOIS_RADB)
     
     irr_objects = []
     current_origin = None
     current_source = None
     
+    # Parsing Simple Line-by-Line
     for line in raw_text.split('\n'):
         line = line.strip()
+        
+        # Tangkap Origin
         if line.startswith('origin:'):
             current_origin = line.split(':', 1)[1].strip().upper()
+            
+        # Tangkap Source
         elif line.startswith('source:'):
             current_source = line.split(':', 1)[1].strip().upper()
         
-        # Simpan format ASxxx@SOURCE
+        # Kalau blok object selesai (ketemu baris kosong atau object baru)
+        # Note: RADB outputnya bisa dempet, jadi kita cek pas dapet origin & source
         if current_origin and current_source:
              obj_str = f"{current_origin}@{current_source}"
              if obj_str not in irr_objects:
                  irr_objects.append(obj_str)
+             # Reset buat object selanjutnya
              current_origin = None
              current_source = None
              
@@ -97,6 +105,7 @@ def get_whois_delegation(cidr_obj):
     zone_name = get_reverse_zone(cidr_obj)
     if not zone_name: return None
     
+    # Query ke APNIC buat delegation
     raw_text = query_socket(f"-rB {zone_name}", server=WHOIS_APNIC)
     nservers = []
     lines = raw_text.split('\n')
@@ -110,10 +119,10 @@ def get_whois_delegation(cidr_obj):
     return None
 
 # ==========================================
-# 4. MODUL UTAMA (APNIC PARSING)
+# 4. MODUL UTAMA (GET DATA & PARSING APNIC)
 # ==========================================
 def get_full_data(cidr):
-    # Ambil data Hierarchy dari APNIC
+    # Ini tetep ke APNIC buat ambil Hierarchy (Parent/Netname)
     cmd_parent = f"-rB {cidr}" 
     raw_parent = query_socket(cmd_parent, server=WHOIS_APNIC)
     cmd_children = f"-m -rB {cidr}"
@@ -171,7 +180,7 @@ def calculate_size(range_str):
     except: return 0
 
 # ==========================================
-# 5. CONTROLLER LOGIC (THE BRAIN)
+# 5. CONTROLLER LOGIC (UPDATED WITH RADB)
 # ==========================================
 def scan_ip_logic(cidr_str):
     # --- PHASE 1: IP WHOIS (APNIC) ---
@@ -207,16 +216,16 @@ def scan_ip_logic(cidr_str):
 
     children_str = " | ".join(children_txt_list) if children_txt_list else "-"
 
-    # --- PHASE 2: BGP INTELLIGENCE (VISIBILITY & IRR) ---
+    # --- PHASE 2: IRR & VISIBILITY & BGP INTELLIGENCE ---
     final_irr_list = route_list[:] 
     rpki_status, rpki_detail, visibility = "UNKNOWN", "-", "Not Seen"
     
     try:
-        # 1. Routing Status (Peers & RPKI ROA)
+        # 1. Cek Visibility & Peers (Routing Status)
         url_stat = f"https://stat.ripe.net/data/routing-status/data.json?resource={cidr_str}"
         resp_stat = requests.get(url_stat, timeout=5)
         
-        # 2. Network Info (Who is announcing?)
+        # 2. Cek Siapa yang Announce (Network Info) - INI FITUR BARUNYA
         url_net = f"https://stat.ripe.net/data/network-info/data.json?resource={cidr_str}"
         resp_net = requests.get(url_net, timeout=5)
         
@@ -230,32 +239,34 @@ def scan_ip_logic(cidr_str):
             v6_p = r_data.get('visibility', {}).get('v6', {}).get('ris_peers_seeing', 0)
             peers_cnt = v4_p if v4_p > 0 else v6_p
             
-            # Ambil route objects (IRR from RIPEstat)
+            # Ambil route objects (IRR)
             for item in r_data.get('route_objects', []):
                 item_fmt = f"{item.get('origin')}@{item.get('source')}"
                 if item_fmt not in final_irr_list: final_irr_list.append(item_fmt)
 
         if resp_net.status_code == 200:
             n_data = resp_net.json().get('data', {})
-            asns = n_data.get('asns', []) 
+            asns = n_data.get('asns', []) # List ASN yang meng-announce IP ini
             if asns:
-                real_origin = f"AS{asns[0]}" # Ambil Origin AS utama
-
-        # 3. Smart Visibility Logic
+                real_origin = f"AS{asns[0]}" # Ambil yang pertama
+        
+        # 3. Logic "Smart Visibility"
         if peers_cnt > 0:
             if peers_cnt < 10:
+                # Kalo peers dikit, kasih warning
                 visibility = f"⚠️ Low Vis. ({peers_cnt} Peers) via {real_origin}"
             else:
+                # Kalo banyak, berarti Global solid
                 visibility = f"✅ Global ({peers_cnt} Peers) via {real_origin}"
         else:
             visibility = "❌ Not Announced"
             
-        # 4. RADB Cross-Check (Langsung ke Source)
+        # 4. Cek RADB juga (Cross-Check)
         radb_objects = get_radb_irr_objects(cidr_str)
         for obj in radb_objects:
             if obj not in final_irr_list: final_irr_list.append(obj)
 
-        # 5. RPKI Validation
+        # 5. RPKI Check
         rpki_url = f"https://stat.ripe.net/data/rpki-roas/data.json?resource={cidr_str}"
         rpki_data = requests.get(rpki_url, timeout=5).json().get('data', {}).get('roas', [])
         if rpki_data:
@@ -266,9 +277,9 @@ def scan_ip_logic(cidr_str):
         else: rpki_status = "NOT FOUND"
         
     except Exception as e:
-        visibility = f"Check Error: {str(e)}"
+        visibility = f"Error Check: {str(e)}"
 
-    # --- PHASE 3: REVERSE DNS & DELEGATION (SMART CHECK) ---
+    # --- PHASE 3: REVERSE DNS & DELEGATION ---
     final_ptr_display = ""
     try:
         net = ipaddress.ip_network(cidr_str, strict=False)
