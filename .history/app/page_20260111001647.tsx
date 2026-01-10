@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Navbar from "@/components/Navber";
+import Navbar from "@/components/Navbar";
 import ResultModal from "@/components/ResultModal";
 import { ScanResult } from "@/types";
 
