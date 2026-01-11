@@ -210,7 +210,7 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
 
                     <div>
                       <p className="text-[10px] text-slate-500 uppercase mb-1">Reverse DNS (PTR)</p>
-                      <div className="bg-slate-800 text-slate-200 p-3 rounded-lg font-mono text-[11px] shadow-inner whitespace-pre-wrap wrap-break-word leading-relaxed max-h-48 overflow-y-auto">{item.ptr_record}</div>
+                      <div className="bg-slate-800 text-slate-200 p-3 rounded-lg font-mono text-[11px] shadow-inner whitespace-pre-wrap break-words leading-relaxed max-h-48 overflow-y-auto">{item.ptr_record}</div>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-500 uppercase mb-2">Route Objects</p>

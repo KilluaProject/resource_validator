@@ -237,7 +237,7 @@ export default function Home() {
                     <div className="flex items-center gap-3 overflow-hidden">
                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${item.mode === "IP" ? "bg-slate-800 text-white" : "bg-blue-600 text-white"}`}>{item.mode}</div>
                        <div className="text-left overflow-hidden">
-                          <p className="text-xs font-bold text-slate-700 truncate max-w-50 md:max-w-md">{item.input.split('\n')[0]} {item.input.split('\n').length > 1 && `(+${item.input.split('\n').length - 1} more)`}</p>
+                          <p className="text-xs font-bold text-slate-700 truncate max-w-[200px] md:max-w-md">{item.input.split('\n')[0]} {item.input.split('\n').length > 1 && `(+${item.input.split('\n').length - 1} more)`}</p>
                           <p className="text-[10px] text-slate-400">{item.date}</p>
                        </div>
                     </div>
