@@ -9,5 +9,4 @@ export interface ScanResult {
   visibility: string;
   irr_objects: string;
   ptr_record: string;
-  upstreams?: string;
 }

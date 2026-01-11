@@ -16,8 +16,9 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
 
   const getMaxLength = (cidr: string) => cidr.includes(":") ? "48" : "24";
 
-  // Helper untuk parsing Sub-allocation
+  // Helper untuk parsing Sub-allocation biar rapi (Tumpuk Vertikal)
   const parseChildString = (childStr: string) => {
+    // Regex buat misahin format: NETNAME (RANGE) : DESC
     const match = childStr.match(/^(.*?) \((.*?)\)(?: : (.*))?$/);
     if (match) {
       return {
@@ -41,9 +42,7 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
     ];
     const rows = data.map(item => {
       const clean = (text: string) => `"${text.replace(/"/g, '""')}"`;
-      
-      // FIX 1: Hapus (item as any), langsung panggil item.upstreams
-      const upstreams = item.upstreams || "-";
+      const upstreams = (item as any).upstreams || "-";
 
       return [
         clean(item.cidr), clean(item.parent_net), clean(item.parent_name), clean(item.parent_desc),
@@ -98,7 +97,7 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
             <div key={idx} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group">
               
               {/* Card Header */}
-              <div className="px-4 py-3 md:px-6 md:py-4 bg-linear-to-r from-slate-50 to-white border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div className="px-4 py-3 md:px-6 md:py-4 bg-gradient-to-r from-slate-50 to-white border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="flex-none flex items-center justify-center w-7 h-7 rounded-lg bg-slate-800 text-white text-xs font-bold font-mono">{idx + 1}</span>
                   <div className="min-w-0">
@@ -127,7 +126,7 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
                     {/* Parent Block */}
                     <div className="pl-3 border-l-2 border-blue-200 space-y-1">
                       <p className="text-[10px] font-bold text-blue-600 uppercase">Parent Block</p>
-                      <p className="font-semibold text-slate-800 text-sm wrap-break-word">{item.parent_name}</p>
+                      <p className="font-semibold text-slate-800 text-sm break-words">{item.parent_name}</p>
                       <p className="text-xs text-slate-500 italic mb-1 border-l-2 border-slate-200 pl-2 py-0.5 bg-slate-50 rounded-r">{item.parent_desc}</p>
                       <p className="font-mono text-xs text-slate-500 bg-slate-100 inline-block px-1 rounded">{item.parent_net}</p>
                     </div>
@@ -184,9 +183,8 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
                     <div>
                       <p className="text-[10px] text-slate-500 uppercase mb-1">Detected Upstreams</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {/* FIX 2: Hapus (item as any), langsung panggil item.upstreams */}
-                        {(!item.upstreams || item.upstreams === "-") ? <span className="text-xs text-slate-400 italic">No upstream data</span> : (
-                          item.upstreams.split(', ').map((asn: string, uIdx: number) => (
+                        {(!(item as any).upstreams || (item as any).upstreams === "-") ? <span className="text-xs text-slate-400 italic">No upstream data</span> : (
+                          (item as any).upstreams.split(', ').map((asn: string, uIdx: number) => (
                             <span key={uIdx} className="bg-purple-50 text-purple-700 border border-purple-100 px-2 py-1 rounded text-[11px] font-bold font-mono">⟵ {asn}</span>
                           ))
                         )}
@@ -195,7 +193,7 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
 
                     <div>
                       <p className="text-[10px] text-slate-500 uppercase mb-1">Reverse DNS (PTR)</p>
-                      <div className="bg-slate-800 text-slate-200 p-3 rounded-lg font-mono text-[11px] shadow-inner whitespace-pre-wrap wrap-break-word leading-relaxed max-h-48 overflow-y-auto">{item.ptr_record}</div>
+                      <div className="bg-slate-800 text-slate-200 p-3 rounded-lg font-mono text-[11px] shadow-inner whitespace-pre-wrap break-words leading-relaxed max-h-48 overflow-y-auto">{item.ptr_record}</div>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-500 uppercase mb-2">Route Objects</p>

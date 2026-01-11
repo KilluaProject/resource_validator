@@ -127,7 +127,7 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
                     {/* Parent Block */}
                     <div className="pl-3 border-l-2 border-blue-200 space-y-1">
                       <p className="text-[10px] font-bold text-blue-600 uppercase">Parent Block</p>
-                      <p className="font-semibold text-slate-800 text-sm wrap-break-word">{item.parent_name}</p>
+                      <p className="font-semibold text-slate-800 text-sm break-words">{item.parent_name}</p>
                       <p className="text-xs text-slate-500 italic mb-1 border-l-2 border-slate-200 pl-2 py-0.5 bg-slate-50 rounded-r">{item.parent_desc}</p>
                       <p className="font-mono text-xs text-slate-500 bg-slate-100 inline-block px-1 rounded">{item.parent_net}</p>
                     </div>
@@ -195,7 +195,7 @@ export default function ResultModal({ data, onClose }: ResultModalProps) {
 
                     <div>
                       <p className="text-[10px] text-slate-500 uppercase mb-1">Reverse DNS (PTR)</p>
-                      <div className="bg-slate-800 text-slate-200 p-3 rounded-lg font-mono text-[11px] shadow-inner whitespace-pre-wrap wrap-break-word leading-relaxed max-h-48 overflow-y-auto">{item.ptr_record}</div>
+                      <div className="bg-slate-800 text-slate-200 p-3 rounded-lg font-mono text-[11px] shadow-inner whitespace-pre-wrap break-words leading-relaxed max-h-48 overflow-y-auto">{item.ptr_record}</div>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-500 uppercase mb-2">Route Objects</p>
