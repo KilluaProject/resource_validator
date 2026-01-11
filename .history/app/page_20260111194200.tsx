@@ -173,7 +173,7 @@ export default function Home() {
         <div className="mb-10 space-y-4">
           <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">Resource <span className="text-blue-600">Validator.</span></h1>
           <p className="text-xl md:text-2xl text-slate-700 font-medium max-w-2xl mx-auto leading-relaxed">&quot;Kalau ada yang simpel, kenapa harus ribet?&quot;</p>
-          <p className="text-slate-500 text-sm md:text-base">Otomatisasi WHOIS, RPKI, IRR, & Reverse DNS.</p>
+          <p className="text-slate-500 text-sm md:text-base">Otomatisasi Audit RPKI, IRR, & Reverse DNS untuk Hostmaster.</p>
         </div>
 
         {/* Toggle Switch */}
@@ -215,7 +215,7 @@ export default function Home() {
           </div>
           <div className="p-4 bg-slate-50/50 border-t border-slate-100 flex justify-end">
              <button onClick={handleSubmit} disabled={loading || !input} className="w-full sm:w-auto bg-slate-900 hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-slate-300/50 active:scale-95">
-                {loading ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>Processing {progress}/{totalScan}...</>) : (<>{mode === "IP" ? "🚀 Submit" : "Search ASN"}<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></>)}
+                {loading ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>Processing {progress}/{totalScan}...</>) : (<>{mode === "IP" ? "Start Audit" : "Search ASN"}<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></>)}
              </button>
           </div>
         </div>
