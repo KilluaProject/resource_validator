@@ -66,7 +66,7 @@ export default function AboutPage() {
               <div className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
                  <div className="font-bold text-slate-800 text-sm w-24">Frontend</div>
                  <div className="flex gap-2">
-                    <span className="px-2 py-1 bg-black text-white text-[10px] font-bold rounded">Next.js</span>
+                    <span className="px-2 py-1 bg-black text-white text-[10px] font-bold rounded">Next.js 14</span>
                     <span className="px-2 py-1 bg-blue-500 text-white text-[10px] font-bold rounded">Tailwind CSS</span>
                  </div>
               </div>

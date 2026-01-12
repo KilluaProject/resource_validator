@@ -56,7 +56,7 @@ export default function AboutPage() {
             <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
               ⚡
             </div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-4">Stack yang digunakan</h2>
+            <h2 className="text-2xl font-bold text-slate-800 mb-4">Teknologi di Balik Layar</h2>
             <p className="text-slate-600 text-sm mb-6">
               Sekadar tools kecil-kecilan yang dibangun pake stack Next.js dan Python. Tujuannya simpel, <i>biar urusan validasi resource gak perlu dicek manual satu-satu lagi</i>. Masih jauh dari kata sempurna, tapi lumayan buat bantu efisiensi kerjaan sehari-hari
             </p>
@@ -66,7 +66,7 @@ export default function AboutPage() {
               <div className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
                  <div className="font-bold text-slate-800 text-sm w-24">Frontend</div>
                  <div className="flex gap-2">
-                    <span className="px-2 py-1 bg-black text-white text-[10px] font-bold rounded">Next.js</span>
+                    <span className="px-2 py-1 bg-black text-white text-[10px] font-bold rounded">Next.js 14</span>
                     <span className="px-2 py-1 bg-blue-500 text-white text-[10px] font-bold rounded">Tailwind CSS</span>
                  </div>
               </div>
