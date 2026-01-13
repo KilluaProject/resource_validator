@@ -354,7 +354,7 @@ export default function Home() {
             </div>
           </div>
         )}
-      </div>
+
         {showModal && results.length > 0 && (<ResultModal data={results} onClose={() => setShowModal(false)} />)}
     </main>
   );
