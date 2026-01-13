@@ -44,7 +44,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-20">
             
             {/* LOGO */}
-            <Link href="/" className="shrink-0 flex items-center gap-2 cursor-pointer group">
+            <Link href="/" className="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg transition-all ${scrolled ? "bg-slate-900 text-white" : "bg-white text-slate-900"}`}>
                 V
               </div>
