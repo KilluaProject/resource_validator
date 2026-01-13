@@ -5,7 +5,6 @@ import ResultModal from "@/components/ResultModal";
 import { ScanResult } from "@/types";
 import { useAuth } from "@/context/AuthContext"; 
 
-// Tipe Data untuk ASN Result
 interface ASNResult {
   asn: string;
   holder: string;
@@ -16,7 +15,6 @@ interface ASNResult {
   upstreams: string[]; 
 }
 
-// Tipe Data untuk History
 interface HistoryItem {
   id: number;
   date: string;
@@ -27,24 +25,20 @@ interface HistoryItem {
 }
 
 export default function Home() {
-  const { isHostmaster } = useAuth(); // Ambil status login dari Global
+  const { isHostmaster } = useAuth(); 
   
   const [mode, setMode] = useState<"IP" | "ASN">("IP");
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0); 
   const [totalScan, setTotalScan] = useState(0);
-  
-  // State Data
   const [results, setResults] = useState<ScanResult[]>([]);
-  const [asnResult, setAsnResult] = useState<ASNResult | null>(null); // <--- Ini variable 1
+  const [asnResult, setAsnResult] = useState<ASNResult | null>(null);
   const [showModal, setShowModal] = useState(false);
-  
-  // State History
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load History pas awal buka
+  // Load History
   useEffect(() => {
     const saved = localStorage.getItem("scanHistory");
     if (saved) {
@@ -52,7 +46,7 @@ export default function Home() {
     }
   }, []);
 
-  // Simpan ke History
+  // History Helper
   const saveToHistory = (newMode: "IP" | "ASN", newInput: string, ipRes?: ScanResult[], asnRes?: ASNResult) => {
     const newItem: HistoryItem = {
       id: Date.now(),
@@ -62,12 +56,11 @@ export default function Home() {
       ipData: ipRes,
       asnData: asnRes
     };
-    const newHistory = [newItem, ...history].slice(0, 5); // Simpan max 5 history
+    const newHistory = [newItem, ...history].slice(0, 5);
     setHistory(newHistory);
     localStorage.setItem("scanHistory", JSON.stringify(newHistory));
   };
 
-  // Fungsi Restore History (Variable 2)
   const restoreHistory = (item: HistoryItem) => {
     setMode(item.mode);
     setInput(item.input);
@@ -81,7 +74,6 @@ export default function Home() {
     }
   };
 
-  // Fungsi Clear History (Variable 3)
   const clearHistory = () => {
     setHistory([]);
     localStorage.removeItem("scanHistory");
@@ -96,24 +88,29 @@ export default function Home() {
     e.target.value = "";
   };
 
-  // Validasi Input (Support Range IP)
+  // === SATPAM FRONTEND (UPDATED: Support Range) ===
   const validateInput = (text: string, type: "IP" | "ASN") => {
     const cleanText = text.trim();
     if (type === "ASN") return /^AS\d+$/i.test(cleanText);
     
+    // Regex IPv4 CIDR / Single
     const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/(?:3[0-2]|[1-2]?[0-9]))?$/;
+    
+    // Regex IPv6
     const ipv6Regex = /^([0-9a-fA-F]{1,4}:){1,7}:?([0-9a-fA-F]{1,4})?(\/[0-9]{1,3})?$/;
-    const rangeRegex = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s*-\s*\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+    
+    // Regex Range (Baru!) -> 1.1.1.1 - 2.2.2.2
+    const rangeRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\s*-\s*(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
     return ipv4Regex.test(cleanText) || ipv6Regex.test(cleanText) || rangeRegex.test(cleanText);
   };
 
-  // --- LOGIC TOMBOL SUBMIT ---
+  // SCAN IP LOGIC
   const handleScanIP = async (targets: string) => {
     if (!targets.trim()) return;
     const lines = targets.split('\n').map(l => l.trim()).filter(l => l !== '');
     
-    // Cek Limit Member vs Hostmaster
+    // PEMBATASAN FITUR
     if (!isHostmaster && lines.length > 1) {
         alert("🔒 Mode Member Terbatas: Cuma bisa scan 1 IP.\n\nLogin sebagai Hostmaster untuk Bulk Scan!");
         return;
@@ -123,7 +120,6 @@ export default function Home() {
         return;
     }
 
-    // Validasi Format
     for (let i = 0; i < lines.length; i++) {
         if (!validateInput(lines[i], "IP")) {
             alert(`⛔ Format Salah di Baris ke-${i+1}: "${lines[i]}"`);
@@ -137,8 +133,6 @@ export default function Home() {
     if(mode === "IP") { setAsnResult(null); setResults([]); setShowModal(false); }
 
     let accumulatedResults: ScanResult[] = [];
-    
-    // Loop Fetch Data
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         try {
@@ -153,7 +147,6 @@ export default function Home() {
         } catch (error) { console.error(error); }
         setProgress(i + 1);
     }
-    
     setResults(accumulatedResults);
     saveToHistory("IP", targets, accumulatedResults, undefined);
     setLoading(false);
@@ -163,11 +156,7 @@ export default function Home() {
   const handleScanASN = async () => {
     if (!input) return;
     if (!validateInput(input, "ASN")) { alert(`⛔ Format ASN Salah.`); return; }
-    
-    setLoading(true); 
-    setAsnResult(null); 
-    setResults([]); 
-    
+    setLoading(true); setAsnResult(null); setResults([]); 
     try {
       const res = await fetch("/api/asn", {
         method: "POST",
@@ -176,7 +165,6 @@ export default function Home() {
       });
       const data = await res.json();
       if (data.detail) { alert(`Error: ${data.detail}`); return; }
-      
       setAsnResult(data);
       saveToHistory("ASN", input, undefined, data);
     } catch (error) { console.error(error); alert("Gagal scan ASN."); } finally { setLoading(false); }
@@ -192,7 +180,7 @@ export default function Home() {
       
       {/* Background Decor */}
       <div className="absolute inset-0 z-0 opacity-[0.4] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
-      <div className="absolute top-0 left-0 right-0 h-96 bg-linear-to-b from-blue-50/50 to-transparent pointer-events-none z-0"></div>
+      <div className="absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-blue-50/50 to-transparent pointer-events-none z-0"></div>
 
       <div className="relative z-10 max-w-4xl mx-auto pt-32 md:pt-40 px-4 md:px-6 text-center">
         
@@ -211,7 +199,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* INPUT CARD */}
+        {/* INPUT AREA */}
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden text-left transition-all focus-within:ring-4 focus-within:ring-blue-100/50">
           <div className="bg-slate-50 border-b border-slate-100 px-4 py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
              <div className="flex flex-wrap items-center gap-2">
@@ -254,19 +242,15 @@ export default function Home() {
           </div>
         </div>
 
-        {/* === BAGIAN INI YANG SEBELUMNYA HILANG/KEPOTONG === */}
-        
-        {/* RECENT SCANS PANEL (Pakai restoreHistory & clearHistory) */}
+        {/* RECENT SCANS */}
         {history.length > 0 && (
           <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
              <div className="flex items-center justify-between px-2 mb-3">
                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">Recent Scans</h3>
-               {/* Pemakaian clearHistory */}
                <button onClick={clearHistory} className="text-[10px] text-red-400 hover:text-red-600 font-bold hover:underline">Clear History</button>
              </div>
              <div className="space-y-2">
                {history.map((item) => (
-                 // Pemakaian restoreHistory
                  <div key={item.id} onClick={() => restoreHistory(item)} className="bg-white border border-slate-200 hover:border-blue-300 p-3 rounded-xl flex items-center justify-between cursor-pointer group transition-all hover:shadow-md">
                     <div className="flex items-center gap-3 overflow-hidden">
                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${item.mode === "IP" ? "bg-slate-800 text-white" : "bg-blue-600 text-white"}`}>{item.mode}</div>
@@ -284,7 +268,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* ASN RESULT DASHBOARD (Pakai asnResult) */}
+        {/* ASN RESULT & MODAL PASSING PROPS */}
         {mode === "ASN" && asnResult && (
            <div className="mt-12 text-left animate-in slide-in-from-bottom-5 fade-in duration-500 pb-20">
              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

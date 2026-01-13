@@ -20,7 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# === SECURITY VALIDATOR (SIMPLIFIED FOR RANGE) ===
+# === SECURITY VALIDATOR (UPDATED: SUPPORT RANGE) ===
 def is_safe_input(text, type="IP"):
     if len(text) > 50: return False 
     text = text.strip()
@@ -32,8 +32,8 @@ def is_safe_input(text, type="IP"):
         ipv4_pattern = r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/(?:3[0-2]|[1-2]?[0-9]))?$'
         # IPv6 Pattern
         ipv6_pattern = r'^([0-9a-fA-F]{1,4}:){1,7}:?([0-9a-fA-F]{1,4})?(\/[0-9]{1,3})?$'
-        # Range Pattern (Santai: Angka.Angka - Angka.Angka)
-        range_pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s*-\s*\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$'
+        # Range Pattern (IP - IP)
+        range_pattern = r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\s*-\s*(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
 
         return bool(re.match(ipv4_pattern, text)) or bool(re.match(ipv6_pattern, text)) or bool(re.match(range_pattern, text))
 
@@ -67,7 +67,9 @@ def calculate_size(range_str):
             return int(net.num_addresses)
     except: return 0
 
-# === TASKS (APNIC With Tagging) ===
+# === TASKS ===
+
+# 1. APNIC HIERARCHY
 def task_apnic_hierarchy(cidr):
     def parse_apnic(raw_text):
         hierarchy_objs = []
