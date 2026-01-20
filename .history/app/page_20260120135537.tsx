@@ -76,7 +76,7 @@ export default function Home() {
     } else if (item.mode === "ASN" && item.asnData) {
       setAsnResult(item.asnData);
       setResults([]);
-      setShowASNModal(true); 
+      setShowASNModal(true); // <--- Munculin Modal ASN
       setShowModal(false);
     }
   };
@@ -174,7 +174,7 @@ export default function Home() {
       
       setAsnResult(data);
       saveToHistory("ASN", input, undefined, data);
-      setShowASNModal(true); 
+      setShowASNModal(true); // <--- Munculin Modal ASN
     } catch (error) { console.error(error); alert("Gagal scan ASN."); } finally { setLoading(false); }
   };
 
