@@ -43,12 +43,14 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             
-           
+            {/* === BAGIAN LOGO (Diedit) === */}
             <Link href="/" className="shrink-0 flex items-center gap-3 cursor-pointer group">
+              
+              {/* Opsi A: Kalo mau Logo IDNIC aja tanpa kotak */}
               <div className="relative w-10 h-10 md:w-12 md:h-12">
-                
+                 {/* Pastikan file 'logo-idnic.png' ada di folder public */}
                  <Image 
-                    src="/apjii-idnic.png" 
+                    src="/logo-idnic.png" 
                     alt="IDNIC Logo" 
                     fill
                     className="object-contain"
@@ -56,7 +58,7 @@ export default function Navbar() {
                  />
               </div>
 
-              
+              {/* Opsi B: Kalo mau Text-nya tetep ada */}
               <div className="flex flex-col">
                   <span className={`font-extrabold text-lg leading-none tracking-tight transition-colors ${scrolled ? "text-slate-900" : "text-slate-800"}`}>
                     Resource <span className="text-blue-600">Validator.</span>
