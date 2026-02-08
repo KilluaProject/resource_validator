@@ -43,14 +43,17 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             
-            {/* === LOGO SECTION === */}
+            {/* === LOGO SECTION (REVISI: SUPER WIDE) === */}
             <Link href="/" className="shrink-0 flex items-center cursor-pointer group py-2">
+              {/* Container kita bikin LEBAR (w-64) dan TINGGI (h-20) 
+                 biar logo landscape APJII/IDNIC bisa masuk tanpa kekecilan.
+              */}
               <div className="relative w-40 h-12 md:w-64 md:h-20"> 
                  <Image 
                     src="/apjii-idnic-logo.png" 
                     alt="IDNIC Logo" 
                     fill
-                    className="object-contain object-left"
+                    className="object-contain object-left" // object-left biar nempel kiri margin
                     priority
                     sizes="(max-width: 768px) 160px, 256px"
                  />
